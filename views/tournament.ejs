@@ -14,6 +14,13 @@
   <% } %>
 </div>
 
+<!-- Quick search -->
+<div class="track-search-wrap">
+  <input type="search" id="track-search" class="track-search"
+         placeholder="Search by track or cup name…" autocomplete="off" aria-label="Search tracks or cups" />
+</div>
+<p id="search-empty" class="muted search-empty" hidden>No tracks or cups match your search.</p>
+
 <!-- Standings -->
 <section class="standings">
   <% standings.forEach((p, i) => { %>
@@ -27,7 +34,7 @@
 
 <!-- Track grid by cup -->
 <% cups.forEach((cup) => { %>
-  <section class="cup">
+  <section class="cup" data-cup="<%= cup.cup.toLowerCase() %>">
     <h2 class="cup-title">
       <%= cup.cup %>
       <span class="cup-set cup-set-<%= cup.set.toLowerCase() %>"><%= cup.set === 'DLC' ? 'Booster Pass' : 'Base' %></span>
@@ -35,7 +42,7 @@
     <div class="track-grid">
       <% cup.tracks.forEach((track) => { %>
         <% const c = slugColor(track.slug); %>
-        <div class="track-tile" id="<%= track.slug %>">
+        <div class="track-tile" id="<%= track.slug %>" data-search="<%= (track.name + ' ' + track.slug).toLowerCase() %>">
           <div class="track-thumb" style="background: linear-gradient(135deg, <%= c.from %>, <%= c.to %>);">
             <img src="/tracks/<%= track.slug %>.jpg" alt="" loading="lazy"
                  onerror="this.style.display='none'" />
@@ -57,5 +64,38 @@
     </div>
   </section>
 <% }) %>
+
+<script>
+  (function () {
+    var input = document.getElementById('track-search');
+    if (!input) return;
+    var cups = Array.prototype.slice.call(document.querySelectorAll('.cup'));
+    var empty = document.getElementById('search-empty');
+
+    function apply() {
+      var q = input.value.trim().toLowerCase();
+      var anyVisible = false;
+      cups.forEach(function (cup) {
+        var cupMatch = q !== '' && (cup.getAttribute('data-cup') || '').indexOf(q) !== -1;
+        var cupHasVisible = false;
+        var tiles = cup.querySelectorAll('.track-tile');
+        Array.prototype.forEach.call(tiles, function (tile) {
+          var hay = tile.getAttribute('data-search') || '';
+          var show = q === '' || cupMatch || hay.indexOf(q) !== -1;
+          tile.hidden = !show;
+          if (show) cupHasVisible = true;
+        });
+        cup.hidden = !cupHasVisible;
+        if (cupHasVisible) anyVisible = true;
+      });
+      if (empty) empty.hidden = anyVisible;
+    }
+
+    input.addEventListener('input', apply);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { input.value = ''; apply(); }
+    });
+  })();
+</script>
 
 <%- include('partials/foot') %>
