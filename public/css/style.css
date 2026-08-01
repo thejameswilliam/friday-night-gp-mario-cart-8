@@ -119,8 +119,9 @@ a { color: inherit; text-decoration: none; }
 .cup-set-base { background: rgba(255,203,5,.15); color: var(--accent); }
 .cup-set-dlc { background: rgba(93,140,255,.18); color: #8fb0ff; }
 
-.track-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
-.track-tile { background: var(--bg-elev); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.track-grid { display: flex; flex-wrap: wrap; gap: 16px; }
+/* 4 per row on desktop. calc() subtracts the shared gap so 4 * 25% + gaps == 100%. */
+.track-tile { width: calc(25% - 12px); background: var(--bg-elev); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
 .track-thumb { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: flex-end; }
 .track-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .track-thumb-label { position: relative; z-index: 1; padding: 8px 10px; font-weight: 800; font-size: .78rem; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.6); line-height: 1.15; }
@@ -171,4 +172,6 @@ input:disabled { opacity: .6; cursor: not-allowed; }
 @media (max-width: 520px) {
   .page-head { flex-direction: column; }
   .score-row { grid-template-columns: 1fr 100px; }
+  /* 2 per row on mobile. calc() subtracts the shared gap so 2 * 50% + gap == 100%. */
+  .track-tile { width: calc(50% - 8px); }
 }
