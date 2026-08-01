@@ -149,6 +149,27 @@ input:focus { outline: none; border-color: var(--primary); }
 fieldset { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: grid; gap: 10px; }
 legend { padding: 0 8px; color: var(--muted); font-weight: 700; }
 
+/* ---------- create page / course picker ---------- */
+.create-page { max-width: 860px; margin: 0 auto; }
+.create-page h1 { margin: 6px 0; }
+.create-actions { display: flex; gap: 10px; }
+.btn-sm { padding: 6px 12px; font-size: .85rem; }
+
+.course-picker { padding-top: 6px; }
+.picker-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.picker-actions { display: flex; gap: 8px; }
+.picker-count { color: var(--muted); font-size: .9rem; }
+.picker-count strong { color: var(--accent); }
+
+.cup-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.cup-pick { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.cup-pick-head { display: flex; align-items: center; gap: 8px; font-weight: 700; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.cup-pick-name { flex: 1; }
+.cup-pick-courses { display: grid; gap: 6px; }
+.course-pick { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: .9rem; color: var(--text); cursor: pointer; padding: 3px 2px; border-radius: 6px; }
+.course-pick:hover { background: var(--bg-elev-2); }
+.cup-pick input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; flex: none; }
+
 .alert { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 16px 0; }
 .alert-error { border-color: var(--danger); color: var(--primary-2); }
 .alert a { color: var(--accent); text-decoration: underline; }

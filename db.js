@@ -39,6 +39,14 @@ db.exec(`
     UNIQUE (tournament_id, track_slug, variant, player_id)
   );
 
+  -- Which courses a tournament includes. Each row is one selected track;
+  -- the tournament plays each in both Normal and Mirror.
+  CREATE TABLE IF NOT EXISTS tournament_tracks (
+    tournament_id INTEGER NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
+    track_slug    TEXT NOT NULL,
+    PRIMARY KEY (tournament_id, track_slug)
+  );
+
   CREATE INDEX IF NOT EXISTS idx_scores_tournament ON scores(tournament_id);
   CREATE INDEX IF NOT EXISTS idx_players_tournament ON players(tournament_id);
 `);
@@ -54,6 +62,21 @@ function transaction(fn) {
     db.exec('ROLLBACK');
     throw err;
   }
+}
+
+// Backfill: tournaments created before course selection existed have no rows in
+// tournament_tracks. Treat them as "all courses" so their dashboards keep working.
+const legacy = db
+  .prepare(
+    `SELECT id FROM tournaments t
+     WHERE NOT EXISTS (SELECT 1 FROM tournament_tracks tt WHERE tt.tournament_id = t.id)`
+  )
+  .all();
+if (legacy.length) {
+  const ins = db.prepare('INSERT OR IGNORE INTO tournament_tracks (tournament_id, track_slug) VALUES (?, ?)');
+  transaction(() => {
+    for (const { id } of legacy) for (const t of TRACKS) ins.run(id, t.slug);
+  });
 }
 
 module.exports = { db, transaction, TRACKS };

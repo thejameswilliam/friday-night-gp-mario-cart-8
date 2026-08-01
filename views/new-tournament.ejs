@@ -1,23 +1,63 @@
 <%- include('partials/head', { pageTitle: 'New tournament' }) %>
+<% const totalCourses = cups.reduce((n, c) => n + c.tracks.length, 0); %>
 
-<div class="narrow">
+<div class="create-page">
+  <a class="back" href="/">← All tournaments</a>
   <h1>New tournament</h1>
-  <p class="muted">Add 2–4 players. Every player plays all 96 tracks in Normal and Mirror.</p>
+  <p class="muted">Add 2–4 players and choose which courses are in play. Each selected course is played in both Normal and Mirror.</p>
   <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
-  <form method="POST" action="/tournaments" class="stack">
+
+  <form method="POST" action="/tournaments" class="stack" id="create-form">
     <label>Tournament name
-      <input type="text" name="name" placeholder="e.g. Friday Night GP" autofocus required />
+      <input type="text" name="name" placeholder="e.g. Friday Night GP" value="<%= form.name %>" autofocus required />
     </label>
+
     <fieldset>
       <legend>Players</legend>
-      <input type="text" name="p1" placeholder="Player 1" required />
-      <input type="text" name="p2" placeholder="Player 2" required />
-      <input type="text" name="p3" placeholder="Player 3 (optional)" />
-      <input type="text" name="p4" placeholder="Player 4 (optional)" />
+      <input type="text" name="p1" placeholder="Player 1" value="<%= form.players[0] %>" required />
+      <input type="text" name="p2" placeholder="Player 2" value="<%= form.players[1] %>" required />
+      <input type="text" name="p3" placeholder="Player 3 (optional)" value="<%= form.players[2] %>" />
+      <input type="text" name="p4" placeholder="Player 4 (optional)" value="<%= form.players[3] %>" />
     </fieldset>
-    <button class="btn btn-primary" type="submit">Create tournament</button>
-    <a class="btn btn-ghost" href="/">Cancel</a>
+
+    <fieldset class="course-picker">
+      <legend>Courses</legend>
+      <div class="picker-toolbar">
+        <div class="picker-actions">
+          <button type="button" class="btn btn-ghost btn-sm" id="select-all">Select all</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="clear-all">Clear all</button>
+        </div>
+        <span class="picker-count"><strong id="sel-count">0</strong> of <%= totalCourses %> courses</span>
+      </div>
+
+      <div class="cup-picker">
+        <% cups.forEach((cup) => { %>
+          <div class="cup-pick">
+            <label class="cup-pick-head">
+              <input type="checkbox" class="cup-toggle" />
+              <span class="cup-pick-name"><%= cup.cup %></span>
+              <span class="cup-set cup-set-<%= cup.set.toLowerCase() %>"><%= cup.set === 'DLC' ? 'Booster Pass' : 'Base' %></span>
+            </label>
+            <div class="cup-pick-courses">
+              <% cup.tracks.forEach((track) => { %>
+                <label class="course-pick">
+                  <input type="checkbox" name="tracks" value="<%= track.slug %>" class="course-cb"
+                         <%= form.selected.has(track.slug) ? 'checked' : '' %> />
+                  <span><%= track.name %></span>
+                </label>
+              <% }) %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </fieldset>
+
+    <div class="create-actions">
+      <button class="btn btn-primary" type="submit">Create tournament</button>
+      <a class="btn btn-ghost" href="/">Cancel</a>
+    </div>
   </form>
 </div>
 
+<script src="/js/new-tournament.js" defer></script>
 <%- include('partials/foot') %>
