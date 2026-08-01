@@ -9,12 +9,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'changeme';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-insecure-secret-change-me';
+// Set BEHIND_PROXY=true in production when served via Nginx over HTTPS.
+// It makes Express trust the proxy and marks the session cookie Secure.
+const BEHIND_PROXY = process.env.BEHIND_PROXY === 'true';
 
 const VARIANTS = ['normal', 'mirror'];
 const trackBySlug = new Map(TRACKS.map((t) => [t.slug, t]));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+if (BEHIND_PROXY) app.set('trust proxy', 1); // trust Nginx for X-Forwarded-* / secure cookies
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
@@ -22,7 +26,12 @@ app.use(
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 * 30 }, // 30 days
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: BEHIND_PROXY, // only send the cookie over HTTPS in production
+    },
   })
 );
 
