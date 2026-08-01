@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : 'MK8 Tournament Tracker' %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">🏁 <span>Tournament Tracker</span></a>
+    <div class="topbar-actions">
+      <% if (isAdmin) { %>
+        <span class="badge badge-admin">Admin</span>
+        <form method="POST" action="/logout" class="inline"><button class="btn btn-ghost">Log out</button></form>
+      <% } else { %>
+        <a class="btn btn-ghost" href="/login">Admin login</a>
+      <% } %>
+    </div>
+  </header>
+  <main class="container">

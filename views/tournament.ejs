@@ -1,0 +1,61 @@
+<%- include('partials/head', { pageTitle: tournament.name }) %>
+
+<div class="page-head">
+  <div>
+    <a class="back" href="/">← All tournaments</a>
+    <h1><%= tournament.name %></h1>
+    <p class="muted"><%= progress.done %> of <%= progress.total %> races scored</p>
+  </div>
+  <% if (isAdmin) { %>
+    <form method="POST" action="/tournaments/<%= tournament.id %>/delete"
+          onsubmit="return confirm('Delete this tournament and all its scores?')">
+      <button class="btn btn-danger">Delete</button>
+    </form>
+  <% } %>
+</div>
+
+<!-- Standings -->
+<section class="standings">
+  <% standings.forEach((p, i) => { %>
+    <div class="standing <%= i === 0 && p.total > 0 ? 'leader' : '' %>">
+      <div class="standing-rank"><%= i === 0 && p.total > 0 ? '👑' : (i + 1) %></div>
+      <div class="standing-name"><%= p.name %></div>
+      <div class="standing-total"><%= p.total %><span>pts</span></div>
+    </div>
+  <% }) %>
+</section>
+
+<!-- Track grid by cup -->
+<% cups.forEach((cup) => { %>
+  <section class="cup">
+    <h2 class="cup-title">
+      <%= cup.cup %>
+      <span class="cup-set cup-set-<%= cup.set.toLowerCase() %>"><%= cup.set === 'DLC' ? 'Booster Pass' : 'Base' %></span>
+    </h2>
+    <div class="track-grid">
+      <% cup.tracks.forEach((track) => { %>
+        <% const c = slugColor(track.slug); %>
+        <div class="track-tile" id="<%= track.slug %>">
+          <div class="track-thumb" style="background: linear-gradient(135deg, <%= c.from %>, <%= c.to %>);">
+            <img src="/tracks/<%= track.slug %>.jpg" alt="" loading="lazy"
+                 onerror="this.style.display='none'" />
+            <span class="track-thumb-label"><%= track.name %></span>
+          </div>
+          <div class="track-name"><%= track.name %></div>
+          <div class="variant-row">
+            <% variants.forEach((v) => { %>
+              <% const done = scored.has(track.slug + '|' + v); %>
+              <a class="variant-btn <%= done ? 'variant-done' : '' %>"
+                 href="/tournaments/<%= tournament.id %>/track/<%= track.slug %>/<%= v %>">
+                <%= v === 'normal' ? 'Normal' : 'Mirror' %>
+                <% if (done) { %><span class="check">✓</span><% } %>
+              </a>
+            <% }) %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+<% }) %>
+
+<%- include('partials/foot') %>

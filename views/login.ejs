@@ -1,0 +1,17 @@
+<%- include('partials/head', { pageTitle: 'Admin login' }) %>
+
+<div class="narrow">
+  <h1>Admin login</h1>
+  <p class="muted">Editing scores and creating tournaments requires the shared admin password.</p>
+  <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+  <form method="POST" action="/login" class="stack">
+    <input type="hidden" name="next" value="<%= next %>" />
+    <label>Password
+      <input type="password" name="password" autofocus required />
+    </label>
+    <button class="btn btn-primary" type="submit">Log in</button>
+    <a class="btn btn-ghost" href="/">Cancel</a>
+  </form>
+</div>
+
+<%- include('partials/foot') %>

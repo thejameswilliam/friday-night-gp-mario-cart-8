@@ -1,0 +1,23 @@
+<%- include('partials/head', { pageTitle: 'New tournament' }) %>
+
+<div class="narrow">
+  <h1>New tournament</h1>
+  <p class="muted">Add 2–4 players. Every player plays all 96 tracks in Normal and Mirror.</p>
+  <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+  <form method="POST" action="/tournaments" class="stack">
+    <label>Tournament name
+      <input type="text" name="name" placeholder="e.g. Friday Night GP" autofocus required />
+    </label>
+    <fieldset>
+      <legend>Players</legend>
+      <input type="text" name="p1" placeholder="Player 1" required />
+      <input type="text" name="p2" placeholder="Player 2" required />
+      <input type="text" name="p3" placeholder="Player 3 (optional)" />
+      <input type="text" name="p4" placeholder="Player 4 (optional)" />
+    </fieldset>
+    <button class="btn btn-primary" type="submit">Create tournament</button>
+    <a class="btn btn-ghost" href="/">Cancel</a>
+  </form>
+</div>
+
+<%- include('partials/foot') %>

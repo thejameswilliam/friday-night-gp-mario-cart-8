@@ -1,0 +1,41 @@
+<%- include('partials/head', { pageTitle: 'Tournaments' }) %>
+
+<div class="page-head">
+  <h1>Tournaments</h1>
+  <% if (isAdmin) { %>
+    <a class="btn btn-primary" href="/tournaments/new">+ New tournament</a>
+  <% } %>
+</div>
+
+<% if (tournaments.length === 0) { %>
+  <div class="empty">
+    <p>No tournaments yet.</p>
+    <% if (isAdmin) { %>
+      <a class="btn btn-primary" href="/tournaments/new">Create the first one</a>
+    <% } else { %>
+      <p class="muted">Log in as admin to create one.</p>
+    <% } %>
+  </div>
+<% } else { %>
+  <div class="card-grid">
+    <% tournaments.forEach((t) => { %>
+      <a class="tournament-card" href="/tournaments/<%= t.id %>">
+        <div class="tournament-card-head">
+          <h2><%= t.name %></h2>
+          <span class="progress-pill"><%= t.progress.done %>/<%= t.progress.total %> races</span>
+        </div>
+        <ol class="mini-standings">
+          <% t.players.forEach((p, i) => { %>
+            <li>
+              <span class="rank"><%= i === 0 && p.total > 0 ? '👑' : (i + 1) %></span>
+              <span class="pname"><%= p.name %></span>
+              <span class="pts"><%= p.total %></span>
+            </li>
+          <% }) %>
+        </ol>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('partials/foot') %>

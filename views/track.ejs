@@ -1,0 +1,34 @@
+<%- include('partials/head', { pageTitle: track.name + ' — ' + tournament.name }) %>
+<% const c = slugColor(track.slug); %>
+
+<div class="narrow">
+  <a class="back" href="/tournaments/<%= tournament.id %>#<%= track.slug %>">← <%= tournament.name %></a>
+
+  <div class="track-header" style="background: linear-gradient(135deg, <%= c.from %>, <%= c.to %>);">
+    <img src="/tracks/<%= track.slug %>.jpg" alt="" onerror="this.style.display='none'" />
+    <div class="track-header-text">
+      <h1><%= track.name %></h1>
+      <p><%= track.cup %> · <span class="variant-tag variant-tag-<%= variant %>"><%= variant === 'normal' ? 'Normal' : 'Mirror' %></span></p>
+    </div>
+  </div>
+
+  <% if (!isAdmin) { %>
+    <div class="alert">View only. <a href="/login?next=<%= encodeURIComponent('/tournaments/' + tournament.id + '/track/' + track.slug + '/' + variant) %>">Log in as admin</a> to enter scores.</div>
+  <% } %>
+
+  <form method="POST" action="/tournaments/<%= tournament.id %>/track/<%= track.slug %>/<%= variant %>" class="score-form">
+    <% players.forEach((p) => { %>
+      <label class="score-row">
+        <span class="score-player"><%= p.name %></span>
+        <input type="number" name="points_<%= p.id %>" inputmode="numeric" step="1"
+               value="<%= scoreMap[p.id] !== undefined ? scoreMap[p.id] : '' %>"
+               placeholder="points" <%= isAdmin ? '' : 'disabled' %> />
+      </label>
+    <% }) %>
+    <% if (isAdmin) { %>
+      <button class="btn btn-primary" type="submit">Save scores</button>
+    <% } %>
+  </form>
+</div>
+
+<%- include('partials/foot') %>
